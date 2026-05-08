@@ -13,8 +13,8 @@
 | Phase 0 | 환경 설정 | ✅ 완료 | `58772e4` | 2026-05-08 |
 | Phase 1 | 도메인 모델 | ✅ 완료 | `c79983d` + `hotfix` | 2026-05-08 |
 | Phase 2 | Repository | ✅ 완료 | `1d26da6`→`d917c05`→`6bc5760` | 2026-05-08 |
-| Phase 3 | Controller | 🚧 진행 중 | — | — |
-| Phase 4 | View | ⏳ 대기 | — | — |
+| Phase 3 | Controller | ✅ 완료 | `ac99d39`→`aa6e217`→`4ae0935` | 2026-05-08 |
+| Phase 4 | View | 🚧 진행 중 | — | — |
 | Phase 5 | Monitor 통합 | ⏳ 대기 | — | — |
 | Phase 6 | main.py 통합 | ⏳ 대기 | — | — |
 
@@ -137,7 +137,46 @@
 
 ---
 
-## Phase 3 – Controller 레이어 🚧
+## Phase 3 – Controller 레이어 ✅
+
+**완료일**: 2026-05-08  
+**커밋**: `ac99d39`(Red) → `aa6e217`(Green) → `4ae0935`(Refactor)
+
+### 구현 내용
+- `app/controller/base_controller.py`: BaseController(ABC), run() 추상 메서드
+- `app/controller/sample_controller.py`: register_sample/list_samples/search_samples
+- `app/controller/order_controller.py`: place_order/list_reserved/approve_order/reject_order/ship_order
+  - **approve_order 분기**: stock≥quantity→CONFIRMED(재고차감), stock<quantity→PRODUCING+ProductionItem
+- `app/controller/production_controller.py`: FIFO deque 큐, get_current/get_queue/complete_production
+  - complete_production: PRODUCING→CONFIRMED + 재고 actual_qty 증가
+
+### Verify Harness 결과
+
+#### SubAgent3 (test-verify)
+| 항목 | 값 | 판정 |
+|------|-----|------|
+| 통과 / 실패 | 27 / 0 | PASS |
+| 커버리지 (app/controller) | 94% | PASS |
+| 핵심 로직 테스트 | approve/reject/ship/complete_production/FIFO 전항목 | PASS |
+| **최종 판정** | | **PASS** |
+
+#### SubAgent4 (compliance-verify)
+| 구분 | 수 |
+|------|---|
+| PASS | 34개 |
+| WARN | 2개 |
+| FAIL | 0개 |
+| **최종 판정** | **PASS** |
+
+**WARN 내용** (기능 결함 없음):
+- `from __future__ import annotations` 미사용 — Python 3.10+ 환경에서 무해
+- `run()` 전체 `pass` — Phase 4 View 연동 예정, 의도적 placeholder
+
+### Main Agent 판정: **PASS → Phase 4 진행**
+
+---
+
+## Phase 4 – View 레이어 🚧
 
 **시작일**: 2026-05-08  
 **진행 중...**
