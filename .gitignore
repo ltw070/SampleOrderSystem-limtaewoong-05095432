@@ -1,0 +1,29 @@
+# 보안
+.mcp.json
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+.coverage
+htmlcov/
+
+# 테스트 임시
+**/tmp_pytest/
+**/tmp_pytest*/
+.pytest_cache/
+
+# 런타임 데이터 (각 PoC 저장소에서 관리)
+**/data/
+
+# Claude Code 로컬 설정 (개인 권한 설정 포함)
+.claude/settings.local.json
+
+# IDE
+.idea/
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
