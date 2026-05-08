@@ -15,22 +15,48 @@ S-Semi 반도체 회사의 시료 생산·주문 관리를 위한 콘솔 기반 
 
 ---
 
+## 개발 진행 상태
+
+| 단계 | 상태 | 내용 |
+|------|------|------|
+| Mission1 PoC 4종 | ✅ 완료 | 322/322 테스트, 평균 96% 커버리지 |
+| Mission2 PRD / PLAN | ✅ 완료 | UI 예시·도메인 모델·Phase 0~6 계획 수립 |
+| Mission2 구현 | 🚧 진행 예정 | TDD + Verify Harness (SubAgent 1~4) |
+
+---
+
 ## 폴더 구조
 
 ```
-PersonalProject/
-├── mission1/                       # PoC 개발 (4종)
-│   ├── 01_ConsoleMVC/              # MVC 스켈레톤 코드
-│   ├── 02_DataPersistence/         # 데이터 영속성 처리
-│   ├── 03_DataMonitor/             # 데이터 모니터링 Tool
-│   ├── 04_DummyDataGenerator/      # Dummy 데이터 생성 Tool
-│   └── REPORT.md                   # PoC 개발 결과 보고서
+PersonalProject/                    # git root → SampleOrderSystem repo
+├── mission1/                       # PoC 4종 ✅ 완료
+│   ├── 01_ConsoleMVC/              # 131/131, 96%  (개별 repo)
+│   ├── 02_DataPersistence/         # 107/107, 95%  (개별 repo)
+│   ├── 03_DataMonitor/             #  41/ 41, 93%  (개별 repo)
+│   ├── 04_DummyDataGenerator/      #  43/ 43, 100% (개별 repo)
+│   └── REPORT.md
 ├── mission2/
-│   └── SampleOrderSystem/          # 반도체 시료 생산주문관리 시스템 (메인)
+│   └── SampleOrderSystem/          # 메인 시스템 🚧
+│       ├── PRD.md                  # ✅ 완료
+│       └── PLAN.md                 # ✅ 완료 (Phase 0~6)
 ├── docs/
 │   └── PRD.md
-├── 0_Ref/                          # 과제 원본 참고 문서
+├── 0_Ref/
 └── CLAUDE.md
+```
+
+---
+
+## Mission2 개발 방식 (Agentic Engineering)
+
+```
+SubAgent1 (m2-doc-verifier)       ← 문서 정합성 검증
+      ↓
+SubAgent2 (m2-ai-action)          ← TDD 구현 Phase별
+      ↓
+SubAgent3 (m2-test-verify)   ‖   SubAgent4 (m2-compliance-verify)
+      ↓
+Main Agent 종합 판정 → PASS / FAIL
 ```
 
 ---
