@@ -14,8 +14,8 @@
 | Phase 1 | 도메인 모델 | ✅ 완료 | `c79983d` + `hotfix` | 2026-05-08 |
 | Phase 2 | Repository | ✅ 완료 | `1d26da6`→`d917c05`→`6bc5760` | 2026-05-08 |
 | Phase 3 | Controller | ✅ 완료 | `ac99d39`→`aa6e217`→`4ae0935` | 2026-05-08 |
-| Phase 4 | View | 🚧 진행 중 | — | — |
-| Phase 5 | Monitor 통합 | ⏳ 대기 | — | — |
+| Phase 4 | View | ✅ 완료 | `f640120`→`85738e5`→`c183bac` | 2026-05-08 |
+| Phase 5 | Monitor 통합 | 🚧 진행 중 | — | — |
 | Phase 6 | main.py 통합 | ⏳ 대기 | — | — |
 
 ---
@@ -176,7 +176,51 @@
 
 ---
 
-## Phase 4 – View 레이어 🚧
+## Phase 4 – View 레이어 ✅
+
+**완료일**: 2026-05-08  
+**커밋**: `f640120`(Red) → `85738e5`(Green) → `c183bac`(Refactor) + hotfix
+
+### 구현 내용
+- `app/view/base_view.py`: BaseView(ABC), display()→str 추상 메서드, get_input()
+- `app/view/main_view.py`: MainView (시스템 현황 + [1]~[6]+[0] 메뉴)
+- `app/view/sample_view.py`: SampleListView / SampleRegisterView / SampleSearchView
+- `app/view/order_view.py`: OrderPlaceView / OrderConfirmView / ReservedListView / ApproveResultView / RejectResultView
+- `app/view/monitor_view.py`: OrderStatusView (REJECTED 제외) / StockStatusView (여유/부족/고갈)
+- `app/view/production_view.py`: ProductionView (FIFO 현황)
+- `app/view/shipment_view.py`: ShipmentListView / ShipmentResultView
+- `app/view/formatters.py`: 공통 포맷팅 유틸 (page_header, separator, table_row, no_data)
+
+**print() 직접 호출: 0건** (주석/docstring 내 언급만 존재)
+
+### Verify Harness 결과
+
+#### SubAgent3 (test-verify)
+| 항목 | 값 | 판정 |
+|------|-----|------|
+| 통과 / 실패 | 93 / 0 | PASS |
+| 커버리지 (app/view) | 94% | PASS |
+| display() str 반환 검증 케이스 | 27개 isinstance 검사 | PASS |
+| print() 직접 호출 | 0건 | PASS |
+| **최종 판정** | | **PASS** |
+
+#### SubAgent4 (compliance-verify)
+| 구분 | 수 |
+|------|---|
+| PASS | 24개 |
+| WARN | 2개 |
+| FAIL | 0개 |
+| **최종 판정** | **PASS** |
+
+**WARN 조치 내역**:
+- WARN-1 (`list | None` Python 3.10+ 구문): 기능 문제 없어 유지
+- WARN-2 (`DOUBLE_SEPARATOR` 미사용 import): `main_view.py`에서 제거 완료
+
+### Main Agent 판정: **PASS → Phase 5 진행**
+
+---
+
+## Phase 5 – Monitor 통합 🚧
 
 **시작일**: 2026-05-08  
 **진행 중...**

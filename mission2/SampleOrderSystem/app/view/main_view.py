@@ -3,7 +3,7 @@ from datetime import datetime
 from typing import Optional
 
 from .base_view import BaseView
-from .formatters import page_header, DOUBLE_SEPARATOR
+from .formatters import page_header
 
 
 class MainView(BaseView):
