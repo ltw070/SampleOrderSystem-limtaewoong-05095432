@@ -15,8 +15,8 @@
 | Phase 2 | Repository | ✅ 완료 | `1d26da6`→`d917c05`→`6bc5760` | 2026-05-08 |
 | Phase 3 | Controller | ✅ 완료 | `ac99d39`→`aa6e217`→`4ae0935` | 2026-05-08 |
 | Phase 4 | View | ✅ 완료 | `f640120`→`85738e5`→`c183bac` | 2026-05-08 |
-| Phase 5 | Monitor 통합 | 🚧 진행 중 | — | — |
-| Phase 6 | main.py 통합 | ⏳ 대기 | — | — |
+| Phase 5 | Monitor 통합 | ✅ 완료 | `2519a15`→`24d699a`→`bc50840` | 2026-05-08 |
+| Phase 6 | main.py 통합 | 🚧 진행 중 | — | — |
 
 ---
 
@@ -220,7 +220,48 @@
 
 ---
 
-## Phase 5 – Monitor 통합 🚧
+## Phase 5 – Monitor 통합 ✅
+
+**완료일**: 2026-05-08  
+**커밋**: `2519a15`(Red) → `24d699a`(Green) → `bc50840`(Refactor)
+
+### 구현 내용
+- `app/monitor/aggregator.py`: MonitorAggregator, StockLevel Enum (SUFFICIENT/SHORTAGE/DEPLETED)
+  - ACTIVE_STATUSES = [CONFIRMED, PRODUCING]
+  - COUNTED_STATUSES = RESERVED/CONFIRMED/PRODUCING/RELEASE (REJECTED 제외)
+  - YIELD_CORRECTION_FACTOR를 app.model.production에서 import (중복 제거)
+- `app/monitor/formatter.py`: MonitorFormatter (format_order_status/format_stock_status → str 반환)
+
+**중요 수정 (doc-verifier FAIL-1 해소)**: PoC3의 `order.order_qty` → `order.quantity`로 변경
+
+### Verify Harness 결과
+
+#### SubAgent3 (test-verify)
+| 항목 | 값 | 판정 |
+|------|-----|------|
+| 통과 / 실패 | 27 / 0 | PASS |
+| 커버리지 (app/monitor) | 100% | PASS |
+| REJECTED 제외 집계 테스트 | 있음 | PASS |
+| 재고 상태 3종 (여유/부족/고갈) | 6개 케이스 | PASS |
+| **최종 판정** | | **PASS** |
+
+#### SubAgent4 (compliance-verify)
+| 구분 | 수 |
+|------|---|
+| PASS | 21개 |
+| WARN | 2개 |
+| FAIL | 0개 |
+| **최종 판정** | **PASS** |
+
+**WARN 내용** (기능 결함 없음):
+- `app/repository/__init__.py` `__all__` 미선언 — import 정상 동작
+- `.gitignore` `data/*.json`만 등록 — json 이외 파일 생성 시 누락 가능
+
+### Main Agent 판정: **PASS → Phase 6 진행**
+
+---
+
+## Phase 6 – main.py 통합 및 최종 검증 🚧
 
 **시작일**: 2026-05-08  
 **진행 중...**
