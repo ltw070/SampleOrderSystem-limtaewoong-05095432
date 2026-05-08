@@ -14,6 +14,7 @@ class OrderController(BaseController):
     """주문 관련 비즈니스 로직을 담당하는 Controller.
 
     OrderRepository, SampleRepository 인터페이스에만 의존한다.
+    의존성은 생성자에서 모두 수령한다.
     """
 
     def __init__(
@@ -29,11 +30,26 @@ class OrderController(BaseController):
         """View 연동은 Phase 4에서 구현한다."""
         pass
 
+    # ------------------------------------------------------------------
+    # Private helpers
+    # ------------------------------------------------------------------
+
     def _next_order_no(self) -> str:
         """ORD-YYYYMMDD-XXXX 형식의 다음 주문 번호를 생성한다."""
         self._seq += 1
         date_str = datetime.now().strftime("%Y%m%d")
         return f"ORD-{date_str}-{self._seq:04d}"
+
+    def _get_order(self, order_no: str) -> Order:
+        """주문 번호로 주문을 조회하거나 ValueError를 발생시킨다."""
+        order = self._order_repo.find_by_id(order_no)
+        if order is None:
+            raise ValueError(f"Order not found: {order_no!r}")
+        return order
+
+    # ------------------------------------------------------------------
+    # Public API
+    # ------------------------------------------------------------------
 
     def place_order(
         self,
@@ -64,7 +80,6 @@ class OrderController(BaseController):
             customer_name=customer_name,
             quantity=quantity,
             created_at=datetime.now(),
-            status=OrderStatus.RESERVED,
         )
         self._order_repo.save(order)
         return order
@@ -98,9 +113,7 @@ class OrderController(BaseController):
         Raises:
             ValueError: 주문 또는 시료가 존재하지 않는 경우
         """
-        order = self._order_repo.find_by_id(order_no)
-        if order is None:
-            raise ValueError(f"Order not found: {order_no!r}")
+        order = self._get_order(order_no)
 
         sample = self._sample_repo.find_by_id(order.sample_id)
         if sample is None:
@@ -111,8 +124,7 @@ class OrderController(BaseController):
 
         if stock >= quantity:
             # 재고 충분: 차감 후 CONFIRMED
-            new_stock = stock - quantity
-            self._sample_repo.update_stock(order.sample_id, new_stock)
+            self._sample_repo.update_stock(order.sample_id, stock - quantity)
             updated_order = self._order_repo.update_status(order_no, OrderStatus.CONFIRMED)
             return (updated_order, None)
         else:
@@ -141,10 +153,7 @@ class OrderController(BaseController):
         Raises:
             ValueError: 주문이 존재하지 않는 경우
         """
-        order = self._order_repo.find_by_id(order_no)
-        if order is None:
-            raise ValueError(f"Order not found: {order_no!r}")
-
+        self._get_order(order_no)  # 존재 여부 확인
         return self._order_repo.update_status(order_no, OrderStatus.REJECTED)
 
     def ship_order(self, order_no: str) -> Order:
@@ -159,9 +168,7 @@ class OrderController(BaseController):
         Raises:
             ValueError: 주문이 CONFIRMED 상태가 아닌 경우
         """
-        order = self._order_repo.find_by_id(order_no)
-        if order is None:
-            raise ValueError(f"Order not found: {order_no!r}")
+        order = self._get_order(order_no)
 
         if order.status != OrderStatus.CONFIRMED:
             raise ValueError(

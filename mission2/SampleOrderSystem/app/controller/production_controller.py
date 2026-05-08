@@ -14,6 +14,7 @@ class ProductionController(BaseController):
     """생산 라인 FIFO 큐를 관리하는 Controller.
 
     OrderRepository, SampleRepository 인터페이스에만 의존한다.
+    의존성은 생성자에서 모두 수령한다.
     """
 
     def __init__(
@@ -29,11 +30,12 @@ class ProductionController(BaseController):
         """View 연동은 Phase 4에서 구현한다."""
         pass
 
-    def enqueue(self, item: ProductionItem) -> None:
-        """ProductionItem을 FIFO 큐 끝에 추가한다.
+    # ------------------------------------------------------------------
+    # Queue management
+    # ------------------------------------------------------------------
 
-        OrderController.approve_order에서 재고 부족 시 호출한다.
-        """
+    def enqueue(self, item: ProductionItem) -> None:
+        """ProductionItem을 FIFO 큐 끝에 추가한다."""
         self._queue.append(item)
 
     def get_current(self) -> Optional[ProductionItem]:
@@ -65,9 +67,9 @@ class ProductionController(BaseController):
         if not self._queue:
             raise ValueError(f"No production order found: {order_no!r}")
 
-        head = self._queue[0]
-        if head.order_no != order_no:
-            # 큐 내에 존재하는지 확인
+        prod_item = self._queue[0]
+        if prod_item.order_no != order_no:
+            # 큐 내에 존재하는지 확인 (FIFO 원칙 위반 감지)
             found = any(item.order_no == order_no for item in self._queue)
             if found:
                 raise ValueError(
@@ -75,8 +77,6 @@ class ProductionController(BaseController):
                     "only the current (head) production item can be completed"
                 )
             raise ValueError(f"No production order found: {order_no!r}")
-
-        prod_item = self._queue[0]
 
         # 시료 재고 증가: current_stock + actual_qty
         sample = self._sample_repo.find_by_id(prod_item.sample_id)

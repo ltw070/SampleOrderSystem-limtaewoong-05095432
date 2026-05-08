@@ -10,6 +10,7 @@ class SampleController(BaseController):
     """시료 관련 비즈니스 로직을 담당하는 Controller.
 
     SampleRepository 인터페이스에만 의존한다 (구현체 교체 가능).
+    의존성은 생성자에서 모두 수령한다.
     """
 
     def __init__(self, sample_repo: SampleRepository) -> None:
@@ -18,6 +19,10 @@ class SampleController(BaseController):
     def run(self) -> None:
         """View 연동은 Phase 4에서 구현한다."""
         pass
+
+    # ------------------------------------------------------------------
+    # Public API
+    # ------------------------------------------------------------------
 
     def register_sample(
         self,
