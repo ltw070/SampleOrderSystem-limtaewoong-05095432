@@ -3,7 +3,7 @@ from datetime import datetime
 from typing import Optional
 
 from .base_view import BaseView
-from .formatters import header, separator, DOUBLE_SEPARATOR
+from .formatters import page_header, DOUBLE_SEPARATOR
 
 
 class MainView(BaseView):
@@ -37,10 +37,7 @@ class MainView(BaseView):
         """메인 화면 문자열을 반환한다."""
         time_str = self._current_time.strftime("%Y-%m-%d %H:%M:%S")
         lines = [
-            f"\n{DOUBLE_SEPARATOR}",
-            f"  반도체 시료 생산주문관리 시스템",
-            f"{DOUBLE_SEPARATOR}",
-            f"  시스템 현황   {time_str}",
+            page_header("반도체 시료 생산주문관리 시스템", f"시스템 현황   {time_str}"),
             "",
             f"  등록 시료   {self._sample_count}종      총 재고    {self._total_stock:,} ea",
             f"  전체 주문   {self._order_count}건      생산라인   {self._production_count}건 대기",

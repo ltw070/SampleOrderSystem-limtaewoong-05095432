@@ -3,7 +3,7 @@
 모든 display() 메서드는 str을 반환한다 (print() 직접 호출 금지).
 """
 from .base_view import BaseView
-from .formatters import header, separator, table_row, no_data
+from .formatters import header, page_header, separator, table_row, no_data
 from .main_view import MainView
 from .sample_view import SampleListView, SampleRegisterView, SampleSearchView
 from .order_view import (
@@ -20,6 +20,7 @@ from .shipment_view import ShipmentListView, ShipmentResultView
 __all__ = [
     "BaseView",
     "header",
+    "page_header",
     "separator",
     "table_row",
     "no_data",

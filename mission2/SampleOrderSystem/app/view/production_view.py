@@ -4,7 +4,7 @@ from typing import Dict, List, Optional
 from app.model.production import ProductionItem
 from app.model.sample import Sample
 from .base_view import BaseView
-from .formatters import header, separator, table_row, no_data, DOUBLE_SEPARATOR
+from .formatters import header, separator, table_row, no_data
 
 
 class ProductionView(BaseView):
