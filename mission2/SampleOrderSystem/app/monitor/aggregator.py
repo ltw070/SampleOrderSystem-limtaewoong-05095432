@@ -8,9 +8,7 @@ from typing import List, Dict
 from app.model.enums import OrderStatus
 from app.model.sample import Sample
 from app.model.order import Order
-
-# 수율 보정 계수 (model/production.py에도 정의됨)
-YIELD_CORRECTION_FACTOR = 0.9
+from app.model.production import YIELD_CORRECTION_FACTOR  # 중복 상수 제거, model에서 재사용
 
 # 집계 대상 주문 상태 (REJECTED 제외)
 COUNTED_STATUSES = [
