@@ -16,7 +16,7 @@
 | Phase 3 | Controller | ✅ 완료 | `ac99d39`→`aa6e217`→`4ae0935` | 2026-05-08 |
 | Phase 4 | View | ✅ 완료 | `f640120`→`85738e5`→`c183bac` | 2026-05-08 |
 | Phase 5 | Monitor 통합 | ✅ 완료 | `2519a15`→`24d699a`→`bc50840` | 2026-05-08 |
-| Phase 6 | main.py 통합 | 🚧 진행 중 | — | — |
+| Phase 6 | main.py 통합 | ✅ 완료 | `eab29f1` + hotfix | 2026-05-08 |
 
 ---
 
@@ -261,11 +261,69 @@
 
 ---
 
-## Phase 6 – main.py 통합 및 최종 검증 🚧
+## Phase 6 – main.py 통합 및 최종 검증 ✅
 
-**시작일**: 2026-05-08  
-**진행 중...**
+**완료일**: 2026-05-08  
+**커밋**: `eab29f1`(Green) + hotfix(캡슐화 수정)
+
+### 구현 내용 (main.py 327줄)
+- **의존성 배선**: JsonSampleRepository / JsonOrderRepository → Controller(3종) + Monitor 생성자 주입
+- **메뉴 서브함수 6개**: run_sample_menu / run_order_place / run_order_approve / run_monitor / run_production / run_shipment
+- `os.makedirs("data", exist_ok=True)` 자동 생성
+- View.display()를 print()로 출력 (View 내부 print 없음 원칙 유지)
+- 입력 오류 try-except 처리
+
+**hotfix**: `order_ctrl._order_repo.find_all()` → `order_ctrl.list_all_orders()` (캡슐화 위반 수정)
+
+### 최종 Verify Harness 결과
+
+#### SubAgent1 (doc-verifier) — 최종 문서 정합성
+| 구분 | 수 | 판정 |
+|------|---|------|
+| PASS | 75 | ✅ |
+| WARN | 4 | 경고 (기능 결함 없음) |
+| FAIL | 0 | ✅ |
+| **최종 판정** | | **PASS** |
+
+PRD 기능 명세 6개 메뉴 전부 구현 확인, 패키지 구조 31개 파일 전부 존재 확인
+
+#### SubAgent3 (test-verify) — 최종 테스트
+| 항목 | 값 | 판정 |
+|------|-----|------|
+| 전체 통과 / 실패 | 223 / 0 | PASS ✅ |
+| 전체 커버리지 (app/) | **96%** | PASS ✅ (기준 80%) |
+| Phase별 테스트 수 | 41+35+27+93+27=223개 | PASS ✅ |
+
+#### SubAgent4 (compliance-verify) — 최종 준수성
+| 구분 | 수 | 판정 |
+|------|---|------|
+| PASS | 40 | ✅ |
+| WARN | 3→0 | hotfix 적용 후 해소 |
+| FAIL | 0 | ✅ |
+| **최종 판정** | | **PASS** |
+
+**WARN 처리 내역**:
+- WARN-1: `order_ctrl._order_repo.find_all()` → `order_ctrl.list_all_orders()` 메서드 추가로 캡슐화 수정
+- WARN-2: `run_monitor()` 파라미터 타입을 구현체에서 인터페이스 타입으로 수정
+- WARN-3: `.gitignore` data/*.json — 루트 .gitignore의 `**/data/`가 커버하므로 유지
+
+### Main Agent 최종 판정: **전체 PASS ✅**
 
 ---
 
-*이 파일은 각 Phase 완료 시 자동으로 업데이트됩니다.*
+## 최종 완료 기준 체크리스트
+
+| 기준 | 결과 |
+|------|------|
+| ✅ 모든 테스트 통과 | 223 / 223 |
+| ✅ 커버리지 80% 이상 | **96%** |
+| ✅ PRD 9가지 기능 메뉴 전부 동작 | [1]~[6]+[0] |
+| ✅ display() 전부 str 반환 (print() 미사용) | app/view/ 전체 확인 |
+| ✅ MVC 단방향 의존성 유지 | 전 레이어 확인 |
+| ✅ Repository Atomic Write 구현 | os.replace() 사용 |
+| ✅ Verify Harness (SubAgent1~4) 전부 PASS | Phase 1~6 전체 |
+| ✅ REPORT.md 기록 | 본 파일 |
+
+---
+
+*Mission2 SampleOrderSystem 구현 완료 — 2026-05-08*

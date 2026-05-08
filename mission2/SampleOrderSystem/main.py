@@ -160,8 +160,8 @@ def run_order_approve(
 def run_monitor(
     aggregator: MonitorAggregator,
     formatter: MonitorFormatter,
-    sample_repo: JsonSampleRepository,
-    order_repo: JsonOrderRepository,
+    sample_repo,
+    order_repo,
 ) -> None:
     """[4] 모니터링 서브메뉴."""
     while True:
@@ -232,7 +232,7 @@ def run_shipment(
     """[6] 출고 처리 서브메뉴."""
     from app.model.enums import OrderStatus
 
-    all_orders = order_ctrl._order_repo.find_all()
+    all_orders = order_ctrl.list_all_orders()
     all_samples = sample_ctrl.list_samples()
     samples_map = {s.id: s for s in all_samples}
 

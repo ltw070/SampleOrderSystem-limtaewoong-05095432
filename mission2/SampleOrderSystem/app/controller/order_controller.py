@@ -88,6 +88,10 @@ class OrderController(BaseController):
         """RESERVED 상태의 주문 목록을 반환한다."""
         return self._order_repo.find_by_status(OrderStatus.RESERVED)
 
+    def list_all_orders(self) -> List[Order]:
+        """전체 주문 목록을 반환한다."""
+        return self._order_repo.find_all()
+
     def approve_order(
         self, order_no: str
     ) -> Tuple[Order, Optional[ProductionItem]]:
