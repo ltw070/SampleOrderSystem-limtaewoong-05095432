@@ -12,8 +12,8 @@
 |-------|------|------|------|--------|
 | Phase 0 | 환경 설정 | ✅ 완료 | `58772e4` | 2026-05-08 |
 | Phase 1 | 도메인 모델 | ✅ 완료 | `c79983d` + `hotfix` | 2026-05-08 |
-| Phase 2 | Repository | ⏳ 대기 | — | — |
-| Phase 3 | Controller | ⏳ 대기 | — | — |
+| Phase 2 | Repository | ✅ 완료 | `1d26da6`→`d917c05`→`6bc5760` | 2026-05-08 |
+| Phase 3 | Controller | 🚧 진행 중 | — | — |
 | Phase 4 | View | ⏳ 대기 | — | — |
 | Phase 5 | Monitor 통합 | ⏳ 대기 | — | — |
 | Phase 6 | main.py 통합 | ⏳ 대기 | — | — |
@@ -96,7 +96,48 @@
 
 ---
 
-## Phase 2 – Repository 레이어 🚧
+## Phase 2 – Repository 레이어 ✅
+
+**완료일**: 2026-05-08  
+**커밋**: `1d26da6`(Red) → `d917c05`(Green) → `6bc5760`(Refactor)
+
+### 구현 내용
+- `app/repository/base_repository.py`: BaseRepository(ABC, Generic[T]) — save/find_by_id/find_all/delete
+- `app/repository/sample_repository.py`: SampleRepository 인터페이스 (update_stock 절대값, find_by_name)
+- `app/repository/order_repository.py`: OrderRepository 인터페이스 (find_by_status, update_status)
+- `app/repository/json/base_json_repo.py`: Atomic Write 공통 기반 (`Path.with_suffix(".tmp")` + `os.replace()`)
+- `app/repository/json/json_sample_repo.py`: Sample JSON 구현체
+- `app/repository/json/json_order_repo.py`: Order JSON 구현체 (OrderStatus `.value`, datetime ISO 8601)
+
+**주요 설계 결정**: `update_stock`을 delta 방식 대신 **절대값 방식**으로 구현. Controller가 재고 계산 후 절대값 전달.
+
+### Verify Harness 결과
+
+#### SubAgent3 (test-verify)
+| 항목 | 값 | 판정 |
+|------|-----|------|
+| 통과 / 실패 | 35 / 0 | PASS |
+| 커버리지 (app/repository) | 99% | PASS |
+| 영속성 테스트 | 6개 (new instance 재조회) | PASS |
+| **최종 판정** | | **PASS** |
+
+#### SubAgent4 (compliance-verify)
+| 구분 | 수 |
+|------|---|
+| PASS | 22개 |
+| WARN | 2개 |
+| FAIL | 0개 |
+| **최종 판정** | **PASS** |
+
+**WARN 내용** (기능 결함 없음):
+- `.gitignore` `data/*.json` vs PLAN 명세 `data/` — JSON 파일 제외 목적 동일
+- `tempfile` 모듈 대신 `Path.with_suffix(".tmp")` + `os.replace()` — Atomic Write 목적 완전 달성
+
+### Main Agent 판정: **PASS → Phase 3 진행**
+
+---
+
+## Phase 3 – Controller 레이어 🚧
 
 **시작일**: 2026-05-08  
 **진행 중...**
