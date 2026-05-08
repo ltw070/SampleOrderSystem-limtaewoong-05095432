@@ -1,5 +1,5 @@
 """Order domain model."""
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime
 from .enums import OrderStatus
 from .validators import validate_order_no, validate_positive_int
@@ -11,8 +11,8 @@ class Order:
     sample_id: str         # reference to Sample.id
     customer_name: str
     quantity: int          # must be positive
-    status: OrderStatus    # initial: RESERVED
     created_at: datetime
+    status: OrderStatus = field(default=OrderStatus.RESERVED)
 
     def __post_init__(self):
         validate_order_no(self.order_no)
