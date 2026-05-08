@@ -56,6 +56,10 @@ class JsonOrderRepository(BaseJsonRepository, OrderRepository):
             status=OrderStatus(data["status"]),
         )
 
+    def _get_id(self, record: dict) -> str:
+        """레코드에서 Order ID(order_no)를 추출한다."""
+        return record["order_no"]
+
     # ------------------------------------------------------------------
     # BaseRepository CRUD 구현
     # ------------------------------------------------------------------

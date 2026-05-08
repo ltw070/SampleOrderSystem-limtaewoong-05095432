@@ -43,6 +43,10 @@ class JsonSampleRepository(BaseJsonRepository, SampleRepository):
             stock=int(data["stock"]),
         )
 
+    def _get_id(self, record: dict) -> str:
+        """레코드에서 Sample ID를 추출한다."""
+        return record["id"]
+
     # ------------------------------------------------------------------
     # BaseRepository CRUD 구현
     # ------------------------------------------------------------------

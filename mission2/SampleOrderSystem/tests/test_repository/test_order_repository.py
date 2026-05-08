@@ -128,6 +128,29 @@ class TestOrderUpdateStatus:
             tmp_order_repo.update_status("ORD-99999999-9999", OrderStatus.PRODUCING)
 
 
+class TestOrderDelete:
+    """Order 삭제 테스트"""
+
+    def test_delete_existing(self, tmp_order_repo, order_reserved):
+        """존재하는 Order를 삭제하면 True를 반환해야 한다"""
+        tmp_order_repo.save(order_reserved)
+        result = tmp_order_repo.delete("ORD-20260508-0001")
+        assert result is True
+
+    def test_delete_then_find_returns_none(self, tmp_order_repo, order_reserved):
+        """삭제 후 find_by_id는 None을 반환해야 한다"""
+        tmp_order_repo.save(order_reserved)
+        tmp_order_repo.delete("ORD-20260508-0001")
+
+        result = tmp_order_repo.find_by_id("ORD-20260508-0001")
+        assert result is None
+
+    def test_delete_nonexistent_returns_false(self, tmp_order_repo):
+        """존재하지 않는 order_no 삭제는 False를 반환해야 한다"""
+        result = tmp_order_repo.delete("ORD-99999999-9999")
+        assert result is False
+
+
 class TestOrderPersistence:
     """test_persistence: 영속성 검증 (새 인스턴스로 재조회)"""
 
